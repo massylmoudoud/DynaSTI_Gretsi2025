@@ -59,7 +59,7 @@ except NameError:
     script_path = ""
 
 
-functionPath = "../src/"
+functionPath = script_path + "../src/"
 sys.path.append(functionPath)
 
 from utile.make_noisy_matrix import make_noise
@@ -69,6 +69,11 @@ from joint_estimation_A_D.joint_optimization_A_D_vector_AMORS import (
     joint_estimation_A_D_vector_AMORS,
 )
 
+
+# disable warnings
+import warnings
+
+warnings.filterwarnings("ignore")
 
 from time import time
 
@@ -124,7 +129,7 @@ def eval_joint_optim_A_D(
     nan = np.array(np.NaN)
 
     # classical alternating minimization AM
-    print("classical AM")
+    #print("classical AM")
     try:
         D_est, A_est, err = joint_estimation_A_D(
             Cvec,
@@ -146,7 +151,7 @@ def eval_joint_optim_A_D(
     # C_est = D_est@A_est
 
     # AMORS
-    print("AMORS")
+    #print("AMORS")
     try:
         D_est_AMORS, A_est_AMORS, err_AMORS, gamma_AMORS = joint_estimation_A_D_AMORS(
             Cvec,
@@ -169,7 +174,7 @@ def eval_joint_optim_A_D(
     # C_est_AMORS = D_est_AMORS @ A_est_AMORS
 
     # vector AMORS (our proposed method)
-    print("VectAMORS")
+    #print("VectAMORS")
     try:
         D_est_VectAMORS, A_est_VectAMORS, err_VectAMORS, gamma_VectAMORS = (
             joint_estimation_A_D_vector_AMORS(
@@ -219,10 +224,10 @@ def eval_joint_optim_A_D(
 if __name__ == "__main__":
     mp.set_start_method("spawn")
     save_path = script_path + "./optimization_results/"
-    N_processes = 50
+    N_processes = max(len(os.sched_getaffinity(0))//2, 1)
 
     ##################################################################################################
-    # Check fi full or reduced grid
+    # Check if full or reduced grid
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -242,12 +247,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.full and not args.reduced:
-        print("full")
+        print("Optimization on full grid")
         N_lambda_L1 = 12
         N_lambda_L2 = 12
         N_lambda_TV = 7
     else:  # args.reduced:
-        print("reduced")
+        print("Optimization on reduced grid")
         N_lambda_L1 = 6
         N_lambda_L2 = 6
         N_lambda_TV = 3
@@ -275,15 +280,14 @@ if __name__ == "__main__":
         lambda_L1_A_vals, lambda_L2_D_vals, lambda_TV_vals, [C_noise], [D_init]
     )
 
-    chunksize = (N_lambda_L1 * N_lambda_L2 * N_lambda_TV) // N_processes
+    chunksize = max((N_lambda_L1 * N_lambda_L2 * N_lambda_TV) // N_processes, 1)
 
-    print("started")
     with mp.Pool(N_processes) as p:
         result_A_D = [
             i for i in p.starmap(eval_joint_optim_A_D, param_A_D, chunksize=chunksize)
         ]
 
     # use compressed json
-    path = save_path + f"FISTA_wide_result_A_D_SNR_{snr}.json.gz"
+    path = save_path + f"FISTA_result_A_D_SNR_{snr}.json.gz"
     with gzip.open(path, "wt", encoding="UTF-8") as zipfile:
         json.dump(result_A_D, zipfile)

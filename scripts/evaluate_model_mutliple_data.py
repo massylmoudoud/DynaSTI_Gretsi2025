@@ -47,8 +47,15 @@ import numpy as np
 import multiprocessing as mp
 import itertools
 import sys
+import os
 import json
 import gzip  # to compress the result
+import argparse  # To set number of realization
+
+# disable warnings
+import warnings
+
+warnings.filterwarnings("ignore")
 
 # Set paths
 import pathlib
@@ -81,7 +88,7 @@ Script to optimize the hyperparameters of FISTA for the joint estimaton of A and
 ########################### Data ###############################################
 # Load the simulation data
 path = (
-    script_path + "../data/simulation/simulation_A_D_2024_12_18_realistic_positive.npz"
+    script_path + "../data/simulation/simulation_A_D_2024_12_18.npz"
 )
 data = np.load(path)
 A_VT = data["A"]
@@ -202,11 +209,24 @@ def eval_joint_optim_A_D(
 if __name__ == "__main__":
     mp.set_start_method("spawn")
     save_path = script_path + "./optimization_results/"
-    N_processes = 52
-
-    ##################################################################################################
+    N_processes = max(len(os.sched_getaffinity(0))//2, 1)
+    
+##################################################################################################
+    # Get number of realizations
+    parser = argparse.ArgumentParser()
+    
+    parser.add_argument("realizations", help="Number of realization",
+                    type=int,  nargs='?', default = 100)
+                    
+    args = parser.parse_args()    
+    
+    N_realizations = args.realizations
+    
+    #if N_realizations < N_processes:
+    #    N_processes = N_realizations
+         ##################################################################################################
     # Generate data
-    N_realizations = 100
+    
     # Signal length
     T = 1000
     snr = 0  # dB
@@ -253,7 +273,7 @@ if __name__ == "__main__":
 
     param_A_D = itertools.product(params, input_data)
 
-    chunksize = (len(params) * N_realizations) // N_processes
+    chunksize = max((len(params) * N_realizations) // N_processes, 1)
 
     with mp.Pool(N_processes) as p:
         result_A_D = [
