@@ -2,15 +2,15 @@
 This code is a proof of concept and part of an ongoing work. It is provided for reproducing the results of a published paper.
 
 > [!CAUTION]
->__This code is NOT intented for production use__
+>__This code is NOT intended for production use__
 
 # ANR DynaSTI: Paper Gretsi 2025
-This repository contains the code to reproduce the results of the paper;
+This repository contains the code to reproduce the results of the paper
 "Correction matricielle de l'indétermination d'échelle pour l'optimisation alternée"
 Submitted to the conference Gretsi 2025
 
 
-# Aknowlegement
+# Acknowlegement
 This work has been supported by the ANR (French research agency "Agence Nationale de la Recherche") project DynaSTI: ANR-22-CE45-0008
 
 # Code structure
@@ -46,39 +46,39 @@ The code is structured as follows:
 └──run_simulations.sh
 ```
 
-The `data` folder contains the example dataset used in the paper.
+The **`data`** folder contains the example dataset used in the paper.
 
-The `external` folder contains the C code of the function to compyte the proximal operator of the total variation proposed and impemented by L. Condat.
+The **`external`** folder contains the C code of the function to compute the proximal operator of the total variation proposed and implemented by L. Condat.
 
-The `notebooks` folder contains the jupyter notebooks to analyse the results and plot the figures
+The **`notebooks`** folder contains the Jupyter notebooks to analyze the results and plot the figures
 
 The folder **`notebooks/figs_GRETSI_soumission`** contains the exact figures that are used in the manuscript
 
 The figures generated when running the code are stored in folder  **`notebooks/figs`** 
 
-The codes to run the methods for mutliple datasets or on a grid of hyperparameters are in the `scripts` folder.
+The codes to run the methods for multiple datasets and on a grid of hyperparameters are in the **`scripts`** folder.
 
-The source code of the methods are in the `src` folder
+The source code of the methods are in the **`src`** folder
 
 The PDF of the manuscript submitted to Gretsi 2025 is 
 **`gretsi_soumission_ID1416.pdf`**
 
 > [!IMPORTANT]
 > All the notebooks (`.ipnb`) in **`notebooks`** where converted into scripts (`.py`) of the same names to 
-> allow automated excecution.
+> allow automated execution.
 > The scripts should __NOT__ be modified.
 
 
 # How to reproduce the results:
-After clonning the repository, open a terminal in the root folder of the project.
+After cloning the repository, open a terminal in the root folder of the project.
 
     
-- First install the requirements in the file **`requiremnts.txt`** by running the folwing commends in athe terminal:
+- First install the requirements in the file **`requiremnts.txt`** by running the following commands in the terminal:
   This requires a valid [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/main) (or Anaconda) installation 
     
     ```Shell
     # Create a new environment
-    conda create --name Grest2025_ID1416
+    conda create --name Grest2025_ID1416 python==3.11.11
     # Activate environment
     conda activate Grest2025_ID1416
     # Install dependencies
@@ -101,20 +101,21 @@ After clonning the repository, open a terminal in the root folder of the project
 Running the script will:
 - Plot the example of simulation data used in the paper (Figure1)
 - Run the optimization for the three methods on a reduced grid of hyperparameters to produce Figure 2.
-(To run on the full grid of parameters as in the paper use the commend
-**`bash run_simulations.sh full`** )
+(To run on the full grid of parameters as in the paper use the command
+**`bash run_simulations.sh full`**)
 
-- Evaluate the three methods for the best set of hyperparameters for 100 realizations of the simulation data.
+- Evaluate the three methods for the best set of hyperparameters for 25 realizations of the simulation data (and with 100 realizations with the option
+**`bash run_simulations.sh full`**).
 - Plot the box plot of the reconstruction error on these realizations (Figure 3)
 - Evaluate the effect of initialization scaling on the convergence of the methods and plot the corresponding Figure 4.
 - Save all the figures presented in the paper in the folder `notebooks/figs`
 
 >[!IMPORTANT] 
->It should be noted that for the study of the effect of hyperparameters, we evaluated 1008 combinations. 
->Running these evaluations took more than 3 hours while using 52 CPU cores.
->With fewers cores, it will take much longer.
->The default behavior of the provided code is to run on a reduced grip of 108 parameters.
->You can run full the evaluation by adding the parameter `full` to the commend:
+>It should be noted that for the study of the effect of hyperparameters, we evaluated 1008 combinations and the box plot Figure 3 is generated with 100 realizations. 
+>Running these evaluations took 5 hours while using 52 CPU cores.
+>With fewer cores, it will take much longer.
+>The default behavior of the provided code is to run on a reduced grip of 108 hyperparameters and generate the box plot with 25 realizations.
+>You can run the full evaluation by adding the parameter `full` to the command:
 >**`bash run_simulations.sh full`**
 
 
