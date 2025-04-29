@@ -46,6 +46,7 @@ import numpy as np
 import multiprocessing as mp
 import itertools
 import sys
+import os
 import json
 import gzip  # to compress the result
 import argparse  # To set size of grid
@@ -126,7 +127,7 @@ def eval_joint_optim_A_D(
     param_D = {"lambda_l2": lambda_L2_D, "maxIter": maxIter_D}
 
     # handle error cases:
-    nan = np.array(np.NaN)
+    nan = np.array(np.nan)
 
     # classical alternating minimization AM
     #print("classical AM")
