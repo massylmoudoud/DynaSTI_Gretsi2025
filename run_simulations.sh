@@ -11,8 +11,8 @@ echo '################################################'
 echo 'Optimizing hyperparemeters'
 
 if [[ "$1" == "full" ]]; then
-   echo 'Runnin on the full grid (will take time)'
-   python scripts/optimize_hyperparameters_simulation.py full
+   echo 'Running on the full grid (will take time)'
+   python scripts/optimize_hyperparameters_simulation.py --full
 else
    echo 'Running on reduced grid'
    #python scripts/optimize_hyperparameters_simulation.py 
